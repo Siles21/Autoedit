@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autoedit — Einfach starten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6EFE6; --bg2:#FBF6EF; --card:#FFFFFF; --ink:#2A2018; --ink2:#5C5246;
+    --muted:#8A7E70; --line:#E7DCCD;
+    --peach:#E8743B; --peach-soft:#FBE6D8; --peach-ink:#B4501F;
+    --green:#3E8E6E; --green-soft:#DCEEE5;
+    --blue:#3F6FB0; --blue-soft:#DEE9F5;
+    --shadow:0 14px 40px rgba(120,80,40,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Hanken Grotesk',sans-serif; font-size:17px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(1100px 600px at 80% -10%, #FCEAD9, transparent 60%);
+    background-attachment:fixed;
+  }
+  ::selection{background:var(--peach);color:#fff}
+  .wrap{max-width:840px;margin:0 auto;padding:0 24px}
+
+  header{padding:22px 0}
+  .bar{display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces';font-weight:700;font-size:20px}
+  .blob{width:14px;height:14px;border-radius:50%;background:var(--peach)}
+  .toplink{font-size:13px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+  .toplink:hover{color:var(--peach)}
+
+  /* hero */
+  .hero{text-align:center;padding:46px 0 30px}
+  .badge{display:inline-block;font-size:13px;font-weight:600;color:var(--green);background:var(--green-soft);
+    padding:7px 16px;border-radius:100px;margin-bottom:24px}
+  h1{font-family:'Fraunces';font-weight:600;font-size:clamp(36px,6.5vw,60px);line-height:1.04;letter-spacing:-.02em;margin-bottom:20px}
+  h1 em{font-style:italic;color:var(--peach)}
+  .lead{font-size:clamp(18px,2.5vw,21px);color:var(--ink2);max-width:580px;margin:0 auto}
+
+  /* before -> after */
+  .ba{display:flex;align-items:center;justify-content:center;gap:18px;margin:42px 0;flex-wrap:wrap}
+  .bacard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 26px;box-shadow:var(--shadow);text-align:center;min-width:200px}
+  .bacard .lbl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .bacard .big{font-family:'Fraunces';font-size:19px;font-weight:600}
+  .bacard .em{color:var(--muted);font-size:14px;margin-top:4px}
+  .bacard.after{border-color:var(--peach);background:linear-gradient(180deg,#fff,#FFF6F0)}
+  .baarrow{font-size:30px;color:var(--peach);font-family:'Fraunces'}
+
+  /* generic section */
+  section{padding:40px 0}
+  .stitle{font-family:'Fraunces';font-weight:600;font-size:clamp(26px,4.5vw,34px);letter-spacing:-.01em;margin-bottom:8px;text-align:center}
+  .ssub{text-align:center;color:var(--muted);max-width:560px;margin:0 auto 36px}
+
+  /* reassure cards */
+  .reassure{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .rc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;text-align:center}
+  .rc .ic{width:46px;height:46px;margin:0 auto 14px;border-radius:14px;display:grid;place-items:center;background:var(--peach-soft)}
+  .rc .ic svg{width:24px;height:24px;stroke:var(--peach-ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .rc h3{font-family:'Fraunces';font-weight:600;font-size:17px;margin-bottom:5px}
+  .rc p{font-size:14px;color:var(--ink2);line-height:1.5}
+  @media(max-width:680px){.reassure{grid-template-columns:1fr}}
+
+  /* big steps */
+  .bigstep{display:flex;gap:22px;background:var(--card);border:1px solid var(--line);border-radius:22px;
+    padding:26px;margin-bottom:18px;box-shadow:var(--shadow);align-items:flex-start}
+  .num{flex:none;width:52px;height:52px;border-radius:50%;background:var(--peach);color:#fff;
+    font-family:'Fraunces';font-weight:700;font-size:24px;display:grid;place-items:center}
+  .bs-body{flex:1;min-width:0}
+  .bigstep h3{font-family:'Fraunces';font-weight:600;font-size:21px;margin-bottom:6px}
+  .bigstep p{color:var(--ink2);font-size:15.5px;margin-bottom:14px}
+  .bigstep .small{font-size:13.5px;color:var(--muted)}
+
+  /* copy box (friendly) */
+  .copybox{background:#2A2018;border-radius:13px;padding:14px 16px;position:relative;display:flex;align-items:center;gap:12px}
+  .copybox code{font-family:'JetBrains Mono';font-size:13.5px;color:#FFD9C2;white-space:pre-wrap;word-break:break-all;flex:1;line-height:1.6}
+  .copybtn{flex:none;font-family:'Hanken Grotesk';font-weight:600;font-size:12.5px;color:#2A2018;background:#FFD9C2;
+    border:none;border-radius:8px;padding:8px 13px;cursor:pointer;transition:.18s}
+  .copybtn:hover{background:#fff}
+  .copybtn.ok{background:var(--green);color:#fff}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:9px;display:flex;align-items:center;gap:7px}
+  .hint b{color:var(--peach-ink)}
+
+  /* video -> claude flow */
+  .flow3{display:flex;align-items:stretch;justify-content:center;gap:12px;margin-bottom:24px}
+  .flow3 .fc{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 18px;text-align:center;box-shadow:var(--shadow);position:relative}
+  .flow3 .fn{position:absolute;top:-11px;left:50%;transform:translateX(-50%);width:26px;height:26px;border-radius:50%;
+    background:var(--peach);color:#fff;font-family:'Fraunces';font-weight:700;font-size:14px;display:grid;place-items:center}
+  .flow3 .fic{width:48px;height:48px;margin:8px auto 14px;border-radius:14px;background:var(--peach-soft);display:grid;place-items:center}
+  .flow3 .fic svg{width:24px;height:24px;stroke:var(--peach-ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .flow3 .fc h3{font-family:'Fraunces';font-weight:600;font-size:16px;margin-bottom:6px}
+  .flow3 .fc p{font-size:13.5px;color:var(--ink2);line-height:1.5}
+  .flow3 .farr{display:flex;align-items:center;color:var(--peach);font-size:24px;font-family:'Fraunces'}
+  @media(max-width:680px){.flow3{flex-direction:column}.flow3 .farr{justify-content:center;transform:rotate(90deg)}}
+
+  .paste-demo{max-width:620px;margin:0 auto}
+  .pd-label{font-size:12.5px;color:var(--muted);margin-bottom:8px;text-align:center}
+  .pd-box{background:#2A2018;border-radius:14px;padding:16px 18px;font-family:'JetBrains Mono';font-size:13.5px;line-height:1.7}
+  .pd-path{color:#9FE0CF;display:block;word-break:break-all}
+  .pd-text{color:#FFD9C2;display:block;margin-top:8px;font-family:'Hanken Grotesk';font-size:15px}
+
+  /* talk-to-claude block */
+  .chat{background:linear-gradient(180deg,#fff,#FBF4EC);border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:var(--shadow)}
+  .bubble{background:var(--peach-soft);border-radius:16px 16px 16px 4px;padding:14px 18px;margin:10px 0;max-width:80%;font-size:15.5px}
+  .bubble.you{background:var(--blue-soft);margin-left:auto;border-radius:16px 16px 4px 16px}
+  .who{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 2px 2px}
+  .who.r{text-align:right}
+
+  /* checklist */
+  .check{list-style:none;display:grid;gap:10px;max-width:560px;margin:0 auto}
+  .check li{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:flex;gap:12px;align-items:center;font-size:15px}
+  .check .tick{flex:none;width:24px;height:24px;border-radius:50%;background:var(--green-soft);display:grid;place-items:center}
+  .check .tick svg{width:13px;height:13px;stroke:var(--green);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .check b{color:var(--ink)}
+  .check span{color:var(--muted);font-size:13.5px}
+
+  .callout{background:var(--blue-soft);border:1px solid #C5D8EE;border-radius:18px;padding:22px 24px;margin-top:14px;display:flex;gap:16px}
+  .callout .ci{flex:none;width:40px;height:40px;border-radius:12px;background:#fff;display:grid;place-items:center}
+  .callout .ci svg{width:22px;height:22px;stroke:var(--blue);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .callout p{font-size:14.5px;color:#274869}
+  .callout b{color:var(--blue)}
+
+  footer{text-align:center;padding:44px 0 64px;color:var(--muted);font-size:13.5px}
+  footer a{color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--line)}
+  footer a:hover{color:var(--peach)}
+
+  .rv{opacity:0;transform:translateY(14px);animation:rev .7s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rev{to{opacity:1;transform:none}}
+  .d1{animation-delay:.08s}.d2{animation-delay:.16s}.d3{animation-delay:.24s}
+</style>
+</head>
+<body>
+
+<header><div class="wrap bar">
+  <div class="brand"><span class="blob"></span>Autoedit</div>
+  <a class="toplink" href="anleitung.html">Für Techniker → die Detail-Anleitung</a>
+</div></header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="badge rv">Keine Programmierkenntnisse nötig</div>
+    <h1 class="rv d1">Dein Video bekommt<br><em>automatisch Grafiken</em>.</h1>
+    <p class="lead rv d2">Du hast ein fertig geschnittenes Video. Autoedit erkennt die wichtigen Stellen — Zahlen, Aufzählungen, Aussagen — und baut dafür schicke Einblendungen, genau im richtigen Moment. Du musst es nur einmal einrichten.</p>
+
+    <div class="ba rv d3">
+      <div class="bacard"><div class="lbl">Vorher</div><div class="big">Dein Schnitt</div><div class="em">nur gesprochenes Wort</div></div>
+      <div class="baarrow">→</div>
+      <div class="bacard after"><div class="lbl">Nachher</div><div class="big">Schnitt + Grafiken</div><div class="em">Zahlen, Listen, Reveals</div></div>
+    </div>
+  </div>
+
+  <!-- reassure -->
+  <section>
+    <div class="reassure">
+      <div class="rc rv">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <h3>Du tippst keinen Code</h3>
+        <p>Du kopierst beim Einrichten 3 Zeilen — verstehen musst du sie nicht.</p>
+      </div>
+      <div class="rc rv d1">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg></div>
+        <h3>Alles ist dabei</h3>
+        <p>Ein Befehl installiert alles Nötige automatisch auf deinem Mac.</p>
+      </div>
+      <div class="rc rv d2">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M8 10h8M8 14h5"/><path d="M21 12a9 9 0 11-3.5-7.1L21 4"/></svg></div>
+        <h3>Du redest mit Claude</h3>
+        <p>Statt Befehle zu lernen, sagst du einfach, was du willst.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- need -->
+  <section>
+    <h2 class="stitle">Was du brauchst</h2>
+    <p class="ssub">Einmalig auf deinem Mac — die meisten haben das eh schon.</p>
+    <ul class="check">
+      <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><div><b>Ein Mac</b> <span>· macOS</span></div></li>
+      <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><div><b>Adobe Premiere Pro</b> <span>· nur wenn die Grafiken direkt rein sollen</span></div></li>
+      <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><div><b>Dein fertig geschnittenes Video</b> <span>· als Datei (z. B. final.mp4)</span></div></li>
+    </ul>
+  </section>
+
+  <!-- install -->
+  <section>
+    <h2 class="stitle">Einrichten — einmalig</h2>
+    <p class="ssub">Öffne das Programm <b>„Terminal"</b> (mit Cmd+Leertaste „Terminal" suchen). Dann diese drei Kästchen nacheinander hineinkopieren und jeweils Enter drücken.</p>
+
+    <div class="bigstep rv">
+      <div class="num">1</div>
+      <div class="bs-body">
+        <h3>Das Programm laden</h3>
+        <p>Holt Autoedit auf deinen Computer.</p>
+        <div class="copybox"><code>git clone https://github.com/Siles21/Autoedit && cd Autoedit</code><button class="copybtn">Kopieren</button></div>
+      </div>
+    </div>
+
+    <div class="bigstep rv d1">
+      <div class="num">2</div>
+      <div class="bs-body">
+        <h3>Automatisch installieren</h3>
+        <p>Richtet alles Nötige selbst ein. Das dauert ein paar Minuten — einfach laufen lassen.</p>
+        <div class="copybox"><code>./setup.sh</code><button class="copybtn">Kopieren</button></div>
+        <div class="hint">⏳ <span>Beim ersten Mal lädt es viel herunter. <b>Warten, bis „Setup done" erscheint.</b></span></div>
+      </div>
+    </div>
+
+    <div class="bigstep rv d2">
+      <div class="num">3</div>
+      <div class="bs-body">
+        <h3>Startklar machen</h3>
+        <p>Aktiviert die Umgebung. Das machst du jedes Mal, wenn du ein neues Terminal-Fenster öffnest.</p>
+        <div class="copybox"><code>source .venv/bin/activate</code><button class="copybtn">Kopieren</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- use: talk to claude -->
+  <section>
+    <h2 class="stitle">Verwenden — einfach reden</h2>
+    <p class="ssub">Wenn du <b>Claude Code</b> nutzt, brauchst du keine Befehle. Du gibst Claude nur dein Video und sagst, was du willst.</p>
+
+    <div class="flow3">
+      <div class="fc">
+        <div class="fn">1</div>
+        <div class="fic"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+        <h3>Video finden</h3>
+        <p>Such dein fertiges Video im <b>Finder</b> (z. B. final.mp4).</p>
+      </div>
+      <div class="farr">→</div>
+      <div class="fc">
+        <div class="fn">2</div>
+        <div class="fic"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg></div>
+        <h3>Pfad kopieren</h3>
+        <p><b>Rechtsklick</b> auf das Video, dann die <b>⌥ Option-Taste</b> halten → „… <b>als Pfadname kopieren</b>".</p>
+      </div>
+      <div class="farr">→</div>
+      <div class="fc">
+        <div class="fn">3</div>
+        <div class="fic"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+        <h3>In Claude einfügen</h3>
+        <p>In Claude mit <b>Cmd+V</b> einfügen und deinen Wunsch dazuschreiben.</p>
+      </div>
+    </div>
+
+    <div class="paste-demo">
+      <div class="pd-label">So sieht deine Nachricht an Claude aus:</div>
+      <div class="pd-box">
+        <span class="pd-path">/Users/du/Desktop/final.mp4</span>
+        <span class="pd-text">Mach mir Sub-Animationen für dieses Video — Zahlen und Aufzählungen einblenden.</span>
+      </div>
+    </div>
+
+    <p class="ssub" style="margin:30px auto 22px">Claude macht dann die ganze Arbeit und fragt dich vor dem Einbauen um Freigabe:</p>
+
+    <div class="chat">
+      <div class="who r">Du</div>
+      <div class="bubble you">„Bau mir Sub-Animationen für mein Video <b>final.mp4</b> — Zahlen und Aufzählungen einblenden."</div>
+      <div class="who">Claude</div>
+      <div class="bubble">Ich höre das Video ab, finde die wichtigen Stellen und schlage dir einen Plan vor. Schau ihn dir an — passt alles?</div>
+      <div class="who r">Du</div>
+      <div class="bubble you">„Ja, sieht gut aus — bau's ein."</div>
+      <div class="who">Claude</div>
+      <div class="bubble">Erledigt. Die Grafiken liegen jetzt im Schnitt / als Datei zum Reinziehen bereit.</div>
+    </div>
+
+    <div class="callout">
+      <div class="ci"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <p><b>Einmal verbinden:</b> Damit Claude den Skill kennt, kopierst du diese eine Zeile ins Terminal — danach versteht Claude einfach „mach Sub-Animationen".<br>
+      <span style="display:inline-block;margin-top:8px;font-family:'JetBrains Mono';font-size:12.5px;background:#2A2018;color:#FFD9C2;padding:8px 12px;border-radius:8px">ln -s "$(pwd)/skill" ~/.claude/Skills/premiere-sub-animations</span></p>
+    </div>
+  </section>
+
+  <!-- result -->
+  <section style="text-align:center">
+    <h2 class="stitle">Und dann?</h2>
+    <p class="ssub">Du prüfst die Grafiken in Premiere. Gefällt etwas nicht? Sag es Claude — „mach die Zahl größer", „verschieb das nach hinten" — und es wird angepasst. Kein Code, nur Sprache.</p>
+  </section>
+
+</div>
+
+<footer>
+  Autoedit · <a href="https://github.com/Siles21/Autoedit" target="_blank">Projekt auf GitHub</a> ·
+  <a href="anleitung.html">technische Anleitung</a><br><br>
+  Steckst du fest? Frag einfach Claude: „Ich komme bei der Installation von Autoedit nicht weiter."
+</footer>
+
+<script>
+  document.querySelectorAll('.copybtn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const t=b.parentElement.querySelector('code').innerText;
+      navigator.clipboard.writeText(t).then(()=>{
+        const o=b.textContent;b.textContent='✓ Kopiert';b.classList.add('ok');
+        setTimeout(()=>{b.textContent=o;b.classList.remove('ok')},1400);
+      });
+    });
+  });
+</script>
+</body>
+</html>
