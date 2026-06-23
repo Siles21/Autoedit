@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autoedit — Anleitung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0d11; --bg2:#101218; --panel:#15181f; --panel2:#1b1f28;
+    --ink:#ECEEF3; --muted:#878E9E; --faint:#5A6172;
+    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
+    --amber:#FFAE2B; --amber-dim:rgba(255,174,43,.14);
+    --cyan:#3FE0D8; --cyan-dim:rgba(63,224,216,.12);
+    --violet:#9C8CFF;
+    --r:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Hanken Grotesk',sans-serif; font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(900px 500px at 85% -5%, rgba(255,174,43,.10), transparent 60%),
+      radial-gradient(800px 500px at 0% 8%, rgba(63,224,216,.07), transparent 55%);
+    background-attachment:fixed;
+  }
+  /* grain */
+  body::after{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:999; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  ::selection{background:var(--amber);color:#1a1300}
+  ::-webkit-scrollbar{width:11px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:#2a2f3a;border-radius:8px;border:3px solid var(--bg)}
+
+  .wrap{max-width:1060px;margin:0 auto;padding:0 28px}
+
+  /* ---- top bar ---- */
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+    background:rgba(12,13,17,.72);border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:'Bricolage Grotesque';font-weight:800;letter-spacing:-.02em;font-size:19px}
+  .dot{width:11px;height:11px;border-radius:3px;background:var(--amber);box-shadow:0 0 16px var(--amber)}
+  .ghbtn{font-family:'JetBrains Mono';font-size:12.5px;color:var(--muted);text-decoration:none;border:1px solid var(--line2);
+    padding:8px 13px;border-radius:9px;transition:.2s}
+  .ghbtn:hover{color:var(--ink);border-color:var(--amber);background:var(--amber-dim)}
+
+  /* ---- hero ---- */
+  .hero{padding:84px 0 50px;position:relative}
+  .kick{font-family:'JetBrains Mono';font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin-bottom:22px}
+  h1{font-family:'Bricolage Grotesque';font-weight:800;letter-spacing:-.035em;line-height:.96;
+    font-size:clamp(44px,8vw,86px);margin-bottom:24px}
+  h1 em{font-style:normal;color:var(--amber)}
+  .lead{font-size:clamp(17px,2.2vw,21px);color:var(--muted);max-width:640px}
+  .lead b{color:var(--ink);font-weight:600}
+
+  /* input->output strip */
+  .io{display:flex;align-items:center;gap:18px;margin-top:46px;flex-wrap:wrap}
+  .io .chip{font-family:'JetBrains Mono';font-size:13px;padding:13px 18px;border:1px solid var(--line2);border-radius:12px;background:var(--panel)}
+  .io .chip .t{color:var(--faint);font-size:11px;display:block;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+  .io .arr{color:var(--amber);font-size:24px;font-family:'Bricolage Grotesque'}
+  .io .out{border-color:var(--amber);background:var(--amber-dim)}
+
+  /* ---- section ---- */
+  section{padding:54px 0;border-top:1px solid var(--line)}
+  .slabel{display:flex;align-items:baseline;gap:14px;margin-bottom:34px}
+  .snum{font-family:'JetBrains Mono';font-size:13px;color:var(--faint)}
+  h2{font-family:'Bricolage Grotesque';font-weight:800;letter-spacing:-.03em;font-size:clamp(26px,4vw,38px)}
+  .sub{color:var(--muted);margin-top:6px;max-width:680px}
+
+  /* prereq grid */
+  .prereq{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px}
+  .pq{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px}
+  .pq .n{font-family:'Bricolage Grotesque';font-weight:600;font-size:16px}
+  .pq .d{font-size:12.5px;color:var(--faint);margin-top:2px;font-family:'JetBrains Mono'}
+  .pq.opt{border-style:dashed}
+  .pq.opt .n{color:var(--cyan)}
+
+  /* step cards */
+  .step{display:grid;grid-template-columns:54px 1fr;gap:20px;padding:22px 0;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:none}
+  .scount{font-family:'Bricolage Grotesque';font-weight:800;font-size:30px;color:var(--amber);line-height:1}
+  .step h3{font-family:'Bricolage Grotesque';font-weight:600;font-size:19px;margin-bottom:4px;letter-spacing:-.01em}
+  .step p{color:var(--muted);font-size:14.5px;margin-bottom:13px}
+  .step p code,.inline{font-family:'JetBrains Mono';font-size:.86em;background:var(--panel2);padding:2px 6px;border-radius:5px;color:var(--cyan)}
+
+  /* code block */
+  .code{position:relative;background:#0a0b0e;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .code pre{font-family:'JetBrains Mono';font-size:13.5px;line-height:1.75;padding:16px 18px;overflow-x:auto;color:#cfd4df}
+  .code .cm{color:var(--faint)}
+  .code .cmd-tok{color:var(--amber)}
+  .code .flag{color:var(--violet)}
+  .code .str{color:var(--cyan)}
+  .cp{position:absolute;top:9px;right:9px;font-family:'JetBrains Mono';font-size:11px;color:var(--muted);
+    background:var(--panel2);border:1px solid var(--line2);border-radius:7px;padding:5px 10px;cursor:pointer;transition:.18s}
+  .cp:hover{color:var(--ink);border-color:var(--amber)}
+  .cp.ok{color:#1a1300;background:var(--amber);border-color:var(--amber)}
+
+  /* ---- pipeline ---- */
+  .track{display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-top:8px;position:relative}
+  .stg{position:relative;padding:18px 14px 20px;border-left:1px solid var(--line)}
+  .stg:first-child{border-left:none}
+  .stg .ph{position:absolute;top:0;left:0;height:4px;border-radius:2px;background:var(--amber);width:0;animation:grow 1s ease forwards}
+  .stg:nth-child(1) .ph{animation-delay:.05s}.stg:nth-child(2) .ph{animation-delay:.18s}
+  .stg:nth-child(3) .ph{animation-delay:.31s;background:var(--cyan)}.stg:nth-child(4) .ph{animation-delay:.44s}
+  .stg:nth-child(5) .ph{animation-delay:.57s}.stg:nth-child(6) .ph{animation-delay:.70s;background:var(--cyan)}
+  @keyframes grow{to{width:100%}}
+  .stg .si{font-family:'JetBrains Mono';font-size:11px;color:var(--faint);letter-spacing:.1em}
+  .stg .sn{font-family:'Bricolage Grotesque';font-weight:600;font-size:16px;margin:7px 0 5px}
+  .stg .sd{font-size:12.5px;color:var(--muted);line-height:1.45}
+  .stg.gate .sn{color:var(--cyan)}
+  @media(max-width:760px){.track{grid-template-columns:1fr 1fr 1fr}.stg{border-left:none;border-top:1px solid var(--line)}}
+
+  /* paths */
+  .paths{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+  .path{border:1px solid var(--line);border-radius:var(--r);padding:24px;background:var(--panel);position:relative;overflow:hidden}
+  .path::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+  .path.a::before{background:var(--amber)}.path.b::before{background:var(--cyan)}
+  .ptag{font-family:'JetBrains Mono';font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+  .path.a .ptag{color:var(--amber)}.path.b .ptag{color:var(--cyan)}
+  .path h3{font-family:'Bricolage Grotesque';font-weight:800;font-size:23px;letter-spacing:-.02em;margin:9px 0 6px}
+  .path .pdesc{color:var(--muted);font-size:14px;margin-bottom:16px;min-height:42px}
+  .pwhen{font-size:12.5px;color:var(--faint);margin-top:14px;font-family:'JetBrains Mono'}
+  @media(max-width:760px){.paths{grid-template-columns:1fr}.prereq{grid-template-columns:1fr 1fr}.io .out{order:9}}
+
+  .note{display:flex;gap:14px;background:var(--cyan-dim);border:1px solid rgba(63,224,216,.3);border-radius:13px;padding:18px 20px;margin-top:26px}
+  .note .ni{color:var(--cyan);font-family:'Bricolage Grotesque';font-weight:800;font-size:20px}
+  .note p{font-size:14px;color:#cfe9e7}
+  .note code{font-family:'JetBrains Mono';font-size:.86em;color:var(--cyan)}
+
+  footer{border-top:1px solid var(--line);padding:40px 0 70px;color:var(--faint);font-size:13px;font-family:'JetBrains Mono'}
+  footer a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2)}
+  footer a:hover{color:var(--amber)}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(16px);animation:rev .7s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rev{to{opacity:1;transform:none}}
+  .d1{animation-delay:.06s}.d2{animation-delay:.14s}.d3{animation-delay:.22s}.d4{animation-delay:.30s}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand"><span class="dot"></span>AUTOEDIT</div>
+    <a class="ghbtn" href="https://github.com/Siles21/Autoedit" target="_blank">↗ github.com/Siles21/Autoedit</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="kick rv">Premiere&nbsp;·&nbsp;Sub-Animations Kit</div>
+    <h1 class="rv d1">Vom fertigen Cut<br>zu <em>animierten Overlays</em>.</h1>
+    <p class="lead rv d2">Aus einem <b>geschnittenen Premiere-Video + Transkript</b> baut Autoedit automatisch frame-genaue Grafiken — Zahlen-Cards, Aufzählungen, Reveals, Lower-Thirds — und legt sie zurück in den Schnitt. Lokal, eigenständig, mit eigener Marke.</p>
+
+    <div class="io rv d3">
+      <div class="chip"><span class="t">Input</span>final.mp4 + Transkript</div>
+      <div class="arr">→</div>
+      <div class="chip">Whisper · Plan · Remotion</div>
+      <div class="arr">→</div>
+      <div class="chip out"><span class="t">Output</span>Overlays im Schnitt</div>
+    </div>
+  </div>
+
+  <!-- INSTALL -->
+  <section>
+    <div class="slabel"><span class="snum">01</span><div><h2>Installation</h2><p class="sub">Ein Befehl installiert alles — Python-Umgebung, Render-Engine und die Live-Premiere-Bridge. Getestet auf macOS.</p></div></div>
+
+    <div class="prereq">
+      <div class="pq"><div class="n">Python ≥ 3.10</div><div class="d">brew install python</div></div>
+      <div class="pq"><div class="n">Node ≥ 18 + npm</div><div class="d">brew install node</div></div>
+      <div class="pq"><div class="n">ffmpeg</div><div class="d">brew install ffmpeg</div></div>
+      <div class="pq opt"><div class="n">Premiere Pro</div><div class="d">nur für Live-Weg</div></div>
+    </div>
+
+    <div class="step">
+      <div class="scount">1</div>
+      <div>
+        <h3>Repo klonen</h3>
+        <p>Hol dir das Kit und wechsle hinein.</p>
+        <div class="code"><button class="cp">copy</button><pre><span class="cmd-tok">git</span> clone https://github.com/Siles21/Autoedit
+<span class="cmd-tok">cd</span> Autoedit</pre></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="scount">2</div>
+      <div>
+        <h3>Setup ausführen</h3>
+        <p>Legt eine isolierte <code>.venv</code> an, installiert alle Python- + Node-Pakete und die Live-Bridge — und prüft sich selbst. Ohne Live-Teil: <code>./setup.sh --no-live</code>.</p>
+        <div class="code"><button class="cp">copy</button><pre><span class="cmd-tok">./setup.sh</span></pre></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="scount">3</div>
+      <div>
+        <h3>Umgebung aktivieren</h3>
+        <p>Einmal pro Terminal — danach laufen alle <code>python3 scripts/…</code>-Befehle.</p>
+        <div class="code"><button class="cp">copy</button><pre><span class="cmd-tok">source</span> .venv/bin/activate</pre></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section>
+    <div class="slabel"><span class="snum">02</span><div><h2>So funktioniert's</h2><p class="sub">Sechs Stufen vom Video zur fertigen Grafik-Spur. Stufe&nbsp;3 ist der einzige Pflicht-Stopp: du gibst den Plan frei.</p></div></div>
+    <div class="track">
+      <div class="stg"><div class="ph"></div><div class="si">STUFE 1</div><div class="sn">Align</div><div class="sd">Whisper-Timecodes gegen den finalen Cut</div></div>
+      <div class="stg"><div class="ph"></div><div class="si">STUFE 2</div><div class="sn">Plan</div><div class="sd">Zahlen, Listen, Reveals werden erkannt</div></div>
+      <div class="stg gate"><div class="ph"></div><div class="si">STUFE 3</div><div class="sn">Freigabe ✓</div><div class="sd">Du prüfst & korrigierst den Plan</div></div>
+      <div class="stg"><div class="ph"></div><div class="si">STUFE 4</div><div class="sn">Render</div><div class="sd">Transparente ProRes-Overlays (Remotion)</div></div>
+      <div class="stg gate"><div class="ph"></div><div class="si">STUFE 5</div><div class="sn">Place</div><div class="sd">Live in Premiere ODER als XML-Export</div></div>
+      <div class="stg"><div class="ph"></div><div class="si">STUFE 6</div><div class="sn">QC</div><div class="sd">Frames prüfen — sitzt alles?</div></div>
+    </div>
+  </section>
+
+  <!-- USAGE -->
+  <section>
+    <div class="slabel"><span class="snum">03</span><div><h2>Verwendung</h2><p class="sub">Stufe 1–4 sind für beide Wege identisch. Erst bei der Platzierung (Stufe 5) wählst du: bequemer Export oder volle Live-Steuerung.</p></div></div>
+
+    <div class="code" style="margin-bottom:26px"><button class="cp">copy</button><pre><span class="cm"># im Repo, venv aktiv:</span>
+<span class="cmd-tok">cd</span> skill
+
+<span class="cm"># 1 · Whisper-Timecodes</span>
+<span class="cmd-tok">python3</span> scripts/align_words.py final.mp4 <span class="flag">--out</span> work/v1/words.json
+
+<span class="cm"># 2 · Plan-Entwurf (danach von dir/Claude vervollständigt)</span>
+<span class="cmd-tok">python3</span> scripts/build_plan.py work/v1/words.json <span class="flag">--out</span> work/v1/animation-plan.json
+
+<span class="cm"># 4 · Overlays rendern (eigene Marke via --brand)</span>
+<span class="cmd-tok">python3</span> scripts/render_overlays.py work/v1/animation-plan.json <span class="flag">\</span>
+    <span class="flag">--remotion</span> remotion <span class="flag">--formats</span> 16x9 <span class="flag">--out</span> work/v1/overlays <span class="flag">--brand</span> <span class="str">default</span></pre></div>
+
+    <div class="paths">
+      <div class="path a">
+        <div class="ptag">Stufe 5 · Weg A</div>
+        <h3>Export</h3>
+        <p class="pdesc">Erzeugt FCP7-XML + Platzierungs-Liste. Du ziehst die Overlays in Premiere. Kein Plugin nötig.</p>
+        <div class="code"><button class="cp">copy</button><pre><span class="cmd-tok">python3</span> scripts/export_fcp7xml.py <span class="flag">\</span>
+  work/v1/animation-plan.json <span class="flag">\</span>
+  <span class="flag">--video</span> final.mp4 <span class="flag">\</span>
+  <span class="flag">--overlays</span> work/v1/overlays/overlays-manifest.json <span class="flag">\</span>
+  <span class="flag">--out</span> work/v1 <span class="flag">--format</span> 16x9</pre></div>
+        <div class="pwhen">→ einfachster Weg, läuft überall</div>
+      </div>
+
+      <div class="path b">
+        <div class="ptag">Stufe 5 · Weg B</div>
+        <h3>Live</h3>
+        <p class="pdesc">Setzt die Overlays direkt ins offene Premiere-Projekt — über die mitgelieferte adb-mcp-Bridge.</p>
+        <div class="code"><button class="cp">copy</button><pre><span class="cm"># einmalig, dann Premiere neu starten:</span>
+<span class="cmd-tok">./vendor/adb-mcp/uxp-cli.sh</span> enable
+
+<span class="cm"># pro Session:</span>
+<span class="cmd-tok">./vendor/adb-mcp/bridge-up.sh</span>
+
+<span class="cm"># platzieren:</span>
+<span class="cmd-tok">node</span> vendor/adb-mcp/premiere_drive.js place <span class="flag">\</span>
+  work/v1/overlays/overlays-manifest.json <span class="flag">--vtrack</span> 9</pre></div>
+        <div class="pwhen">→ Details: docs/LIVE-PREMIERE-SETUP.md</div>
+      </div>
+    </div>
+
+    <div class="note">
+      <div class="ni">⌘</div>
+      <p><b>Eigene Marke:</b> Farben &amp; Schrift kommen aus <code>skill/remotion/brands/&lt;name&gt;.json</code>. Kopiere <code>default.json</code>, passe die Farben an und render mit <code>--brand meinebrand</code>. So tragen alle Overlays dein CI.</p>
+    </div>
+
+    <div class="note" style="background:var(--amber-dim);border-color:rgba(255,174,43,.3)">
+      <div class="ni" style="color:var(--amber)">↻</div>
+      <p style="color:#f3e2c4">Tipp: Wenn du <b>Claude Code</b> nutzt, verlinke den Skill mit <code>ln -s "$(pwd)/skill" ~/.claude/Skills/premiere-sub-animations</code> — dann fährt Claude die ganze Pipeline für dich, sobald du „Sub-Animationen für mein Video" sagst.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    AUTOEDIT — Premiere Sub-Animations Kit &nbsp;·&nbsp;
+    <a href="https://github.com/Siles21/Autoedit" target="_blank">Repo</a> &nbsp;·&nbsp;
+    <a href="https://github.com/Siles21/Autoedit/blob/main/README.md" target="_blank">README</a> &nbsp;·&nbsp;
+    <a href="https://github.com/Siles21/Autoedit/blob/main/docs/LIVE-PREMIERE-SETUP.md" target="_blank">Live-Setup</a><br><br>
+    Live-Bridge: adb-mcp (© Mike Chambers, MIT).
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.cp').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const code=btn.parentElement.querySelector('pre').innerText;
+      navigator.clipboard.writeText(code).then(()=>{
+        const o=btn.textContent; btn.textContent='✓ kopiert'; btn.classList.add('ok');
+        setTimeout(()=>{btn.textContent=o;btn.classList.remove('ok')},1400);
+      });
+    });
+  });
+</script>
+</body>
+</html>
