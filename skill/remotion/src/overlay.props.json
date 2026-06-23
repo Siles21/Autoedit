@@ -1,0 +1,24 @@
+{
+  "type": "stat",
+  "format": "16x9",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "hold": 2.8,
+  "content": {
+    "value": "4,2 %",
+    "label": "Durchschnittliche Mietrendite",
+    "sublabel": "über alle Standorte"
+  },
+  "brand": {
+    "name": "NeoCore Capital",
+    "font": "Montserrat",
+    "colors": {
+      "primary": "#0E2146",
+      "primaryDark": "#0B1125",
+      "accent": "#58A6FF",
+      "muted": "rgba(255,255,255,0.72)",
+      "white": "#FFFFFF"
+    }
+  }
+}

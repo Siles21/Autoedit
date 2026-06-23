@@ -1,0 +1,11 @@
+{
+  "name": "NeoCore Capital",
+  "font": "Montserrat",
+  "colors": {
+    "primary": "#0E2146",
+    "primaryDark": "#0B1125",
+    "accent": "#58A6FF",
+    "muted": "rgba(255,255,255,0.72)",
+    "white": "#FFFFFF"
+  }
+}

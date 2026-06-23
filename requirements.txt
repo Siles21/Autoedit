@@ -1,0 +1,13 @@
+# Python dependencies for the Premiere Sub-Animations kit.
+# Install:  python3 -m pip install -r requirements.txt
+#
+# faster-whisper  -> Stage 1 word-level transcription (align_words.py / _whisper.py)
+# opencv-python-headless -> face-aware overlay placement (face_zones.py); headless
+#                           = smaller, no GUI/Qt libs (we only run DNN inference),
+#                           works on headless servers. We only do inference.
+# numpy                   -> opencv image buffers
+# NOTE: on macOS you may see a harmless "Class AVF... implemented in both" objc
+#       warning when av (whisper) and cv2 load in one process — cosmetic, ignore.
+faster-whisper>=1.0.0
+opencv-python-headless>=4.9.0
+numpy>=1.26.0

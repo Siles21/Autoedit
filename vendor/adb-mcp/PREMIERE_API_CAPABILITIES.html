@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premiere UXP — Was geht & was nicht</title>
+<style>
+  :root{
+    --bg:#0A0E14; --panel:#121826; --panel2:#0F1420; --line:#222C3D;
+    --ink:#E7ECF3; --mut:#8A98AD; --accent:#58A6FF;
+    --ok:#3FB950; --warn:#E3B341; --no:#F85149; --rose:#E5557A;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  header{padding:38px 28px 22px;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#0E1420,#0A0E14)}
+  h1{margin:0 0 6px;font-size:26px;letter-spacing:-.4px}
+  .sub{color:var(--mut);max-width:820px}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+  .stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:12px 16px;min-width:120px}
+  .stat b{font-size:24px;display:block}
+  .stat span{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  .controls{position:sticky;top:0;z-index:5;background:rgba(10,14,20,.92);
+    backdrop-filter:blur(8px);padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:8px}
+  input[type=search]{width:100%;max-width:420px;padding:11px 14px;border-radius:10px;
+    border:1px solid var(--line);background:var(--panel2);color:var(--ink);font-size:15px}
+  .filters{display:inline-flex;gap:6px;margin-left:10px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:var(--panel);color:var(--mut);
+    border-radius:20px;padding:6px 13px;font-size:13px;cursor:pointer;user-select:none}
+  .chip.active{color:var(--ink);border-color:var(--accent)}
+  section{margin:34px 0}
+  h2{font-size:19px;border-left:3px solid var(--accent);padding-left:11px;margin:0 0 4px}
+  .h2note{color:var(--mut);margin:0 0 16px;padding-left:14px;font-size:13.5px}
+  table{width:100%;border-collapse:collapse;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--panel2);color:var(--mut);font-size:12px;text-transform:uppercase;
+    letter-spacing:.5px;font-weight:600}
+  tr:last-child td{border-bottom:none}
+  code{background:#0B1828;border:1px solid #1d3247;color:#9FD0FF;
+    padding:1.5px 6px;border-radius:6px;font:13px ui-monospace,Menlo,monospace;white-space:nowrap}
+  .cmd{font:13.5px ui-monospace,Menlo,monospace;color:#CDE3FF;font-weight:600}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;
+    text-transform:uppercase;letter-spacing:.4px}
+  .t-ok{background:rgba(63,185,80,.14);color:var(--ok)}
+  .t-test{background:rgba(88,166,255,.16);color:var(--accent)}
+  .t-warn{background:rgba(227,179,65,.15);color:var(--warn)}
+  .t-no{background:rgba(248,81,73,.15);color:var(--no)}
+  .muted{color:var(--mut)}
+  .usage{background:var(--panel2);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;font:13px ui-monospace,Menlo,monospace;color:#BFD6F0;overflow:auto;white-space:pre}
+  footer{color:var(--mut);font-size:12.5px;padding:30px 28px 60px;text-align:center}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Premiere UXP-Plugin — Was geht & was nicht</h1>
+    <p class="sub">Vollständige Übersicht aller Steuerbefehle, die das <code>com.adbmcp.premiere</code>-Plugin
+    live in Premiere Pro 26.2 ausführen kann — plus alles, was die Adobe-UXP-API <em>nicht</em> hergibt,
+    und wie man die Lücken trotzdem umgeht. Aufruf über <code>node premiere_drive.js cmd &lt;befehl&gt; '&lt;json&gt;'</code>.</p>
+    <div class="stats">
+      <div class="stat"><b>70</b><span>Befehle live</span></div>
+      <div class="stat"><b>48</b><span>neu ergänzt</span></div>
+      <div class="stat"><b>60</b><span>API-Klassen</span></div>
+      <div class="stat"><b>5</b><span>echte Rest-Lücken</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="controls">
+    <input type="search" id="q" placeholder="Befehl oder Funktion suchen… (z. B. label, marker, export, lautstärke)">
+    <span class="filters">
+      <span class="chip active" data-f="all">Alle</span>
+      <span class="chip" data-f="ok">✅ Geht</span>
+      <span class="chip" data-f="warn">⚠️ Indirekt</span>
+      <span class="chip" data-f="no">❌ Geht nicht</span>
+    </span>
+  </div>
+
+  <!-- IMPLEMENTED -->
+  <section>
+    <h2>✅ Live im Plugin — sofort nutzbar</h2>
+    <p class="h2note">Jeder Befehl gibt zusätzlich automatisch den kompletten Sequenz-/Projektstand zurück.
+      <span class="t-test tag">getestet</span> = diese Session live geprüft.</p>
+    <table id="tbl-ok">
+      <thead><tr><th>Befehl</th><th>Was es macht</th><th>Status</th></tr></thead>
+      <tbody>
+        <!-- Projekt / Dateien -->
+        <tr data-s="ok"><td class="cmd">createProject</td><td>Neues .prproj anlegen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">openProject</td><td>Projekt öffnen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">saveProject / saveProjectAs</td><td>Speichern / Speichern unter</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">importMedia</td><td>Dateien ins Projekt importieren</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">getProjectInfo</td><td>Projekt + alle Sequenzen, Spuren, Clips, fps, Dauer</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">getAppInfo <span class="tag t-test">neu</span></td><td>Premiere-Version, AME/AE installiert?</td><td><span class="tag t-test">getestet</span></td></tr>
+
+        <!-- Sequenz / Timeline -->
+        <tr data-s="ok"><td class="cmd">addMediaToSequence</td><td>Clip auf Spur an Tick-Position setzen (overwrite)</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">removeItemFromSequence</td><td>Clip von Spur löschen (ripple optional)</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setClipStartEndTimes</td><td>Clip-Anfang/-Ende (Trimmen) per Ticks</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">moveClip <span class="tag t-test">neu</span></td><td>Clip auf der Timeline um X Sek. verschieben</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">closeGapsOnSequence</td><td>Lücken auf einer Spur schließen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setClipDisabled</td><td>Clip stummschalten/deaktivieren</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">renameClip <span class="tag t-test">neu</span></td><td>Clip auf der Timeline umbenennen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">selectClip / clearSelection <span class="tag t-test">neu</span></td><td>Clip(s) auf der Timeline selektieren</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setActiveSequence</td><td>Aktive Sequenz wechseln</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">createSequence <span class="tag t-test">neu</span></td><td>Neue Sequenz aus Preset</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">createSequenceFromMedia</td><td>Sequenz aus Clips bauen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">deleteSequence <span class="tag t-test">neu</span></td><td>Sequenz löschen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">createSubsequence <span class="tag t-test">neu</span></td><td>Verschachtelte Sub-Sequenz erzeugen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">getSequenceSettings <span class="tag t-test">neu</span></td><td>Auflösung, fps, Sample-Rate, PAR auslesen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setSequenceInOut / setZeroPoint <span class="tag t-test">neu</span></td><td>In/Out-Punkte, Start-Timecode setzen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setPlayerPosition / getPlayerPosition <span class="tag t-test">neu</span></td><td>Abspielkopf setzen/lesen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">sceneEditDetection <span class="tag t-test">neu</span></td><td>Automatische Schnitterkennung auf Auswahl</td><td><span class="tag t-ok">geht</span></td></tr>
+
+        <!-- Effekte / Übergänge -->
+        <tr data-s="ok"><td class="cmd">listVideoEffects <span class="tag t-test">neu</span></td><td>Alle verfügbaren Videoeffekte auflisten</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">listAudioEffects <span class="tag t-test">neu</span></td><td>Alle Audioeffekte auflisten</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">listVideoTransitions <span class="tag t-test">neu</span></td><td>Alle Übergänge auflisten (105 gefunden)</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">appendVideoFilter</td><td>Videoeffekt auf Clip legen + Parameter setzen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">appendVideoTransition</td><td>Übergang auf Clip (Dauer/Ausrichtung)</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setVideoClipProperties</td><td>Deckkraft + Mischmodus (keyframebar)</td><td><span class="tag t-ok">geht</span></td></tr>
+
+        <!-- Projekt-Items / Bins -->
+        <tr data-s="ok"><td class="cmd">setColorLabel <span class="tag t-test">neu</span></td><td>★ Clip-Label-Farbe setzen (rot/blau/…) — „Bilder markieren"</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">getColorLabel <span class="tag t-test">neu</span></td><td>Label-Farbe eines Items auslesen</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">renameProjectItem <span class="tag t-test">neu</span></td><td>Projekt-Item umbenennen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">relinkMedia <span class="tag t-test">neu</span></td><td>Medien neu verknüpfen (Pfad ändern) = „Footage ersetzen"</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">overrideFrameRate <span class="tag t-test">neu</span></td><td>fps eines Clips überschreiben (Interpret Footage)</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">attachProxy <span class="tag t-test">neu</span></td><td>Proxy/Hi-Res anhängen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setProjectItemOffline <span class="tag t-test">neu</span></td><td>Item offline schalten</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">getProjectItemInfo <span class="tag t-test">neu</span></td><td>Medienpfad, Proxy-, Offline-Status</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">createBinInActiveProject</td><td>Bin (Ordner) anlegen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">renameBin <span class="tag t-test">neu</span></td><td>Bin umbenennen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">moveProjectItemsToBin</td><td>Items in Bin verschieben</td><td><span class="tag t-ok">geht</span></td></tr>
+
+        <!-- Marker -->
+        <tr data-s="ok"><td class="cmd">addMarkerToSequence</td><td>Marker setzen (Name, Dauer, Kommentar)</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">getMarkers <span class="tag t-test">neu</span></td><td>Alle Marker einer Sequenz auslesen</td><td><span class="tag t-ok">geht</span></td></tr>
+
+        <!-- Audio -->
+        <tr data-s="ok"><td class="cmd">setAudioTrackMute</td><td>Audiospur stummschalten</td><td><span class="tag t-ok">geht</span></td></tr>
+
+        <!-- Export -->
+        <tr data-s="ok"><td class="cmd">exportSequence</td><td>Sequenz rendern (sofort / AME-Queue), Preset</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">exportFrame</td><td>Einzelbild als PNG/JPG/TIF exportieren</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">exportFCPXML <span class="tag t-test">neu</span></td><td>Sequenz als Final-Cut-Pro-XML exportieren</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">exportOTIO <span class="tag t-test">neu</span></td><td>Sequenz als OpenTimelineIO exportieren</td><td><span class="tag t-ok">geht</span></td></tr>
+
+        <!-- Metadaten / Properties -->
+        <tr data-s="ok"><td class="cmd">getXMPMetadata / setXMPMetadata <span class="tag t-test">neu</span></td><td>XMP-Metadaten lesen/schreiben</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">getProperty / setProperty <span class="tag t-test">neu</span></td><td>Eigene Schlüssel-Werte an Projekt/Sequenz</td><td><span class="tag t-ok">geht</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ENGINE (NEW, TESTED) -->
+  <section>
+    <h2>🎛️ Effekt-, Farb- &amp; Audio-Engine — neu &amp; live getestet</h2>
+    <p class="h2note">Der generische Komponenten-Parameter-Weg. Adressiert über den stabilen Match-Namen + Parameter-<b>Index</b> (locale-fest, da die Anzeigenamen lokalisiert sind). Macht Bewegung, Farbe, Audio &amp; Keyframes echt steuerbar.</p>
+    <table>
+      <thead><tr><th>Befehl</th><th>Was es macht</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr data-s="ok"><td class="cmd">inspectClip</td><td>Komplette Effekt-Kette + Parameter-Indizes eines Clips auslesen (Discovery)</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setEffectParam</td><td>Beliebigen Effekt-Parameter setzen (per Index od. Name) — der Universal-Hebel</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">addKeyframe</td><td>Keyframe auf jeden Parameter setzen (Stoppuhr an + Wert + Interpolation)</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">clearKeyframes</td><td>Keyframing abschalten + statischen Wert setzen</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setClipTransform</td><td>Position / Größe / Drehung / Deckkraft eines Clips (Bewegung-Effekt)</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setColorGrade</td><td>★ Farbkorrektur: Temperatur, Belichtung, Kontrast, Sättigung, Lichter/Schatten/Weiß/Schwarz (legt Lumetri an)</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">applyEffect / removeEffect</td><td>Beliebigen Videoeffekt (z. B. Lumetri) hinzufügen / entfernen</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setInputLUT / getInputLUT</td><td>★ Input-LUT eines Clips setzen / auslesen (.cube)</td><td><span class="tag t-test">getestet (read)</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setClipVolume</td><td>★ Clip-Lautstärke in dB (war vorher „geht nicht")</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">setClipPan</td><td>★ Links/Rechts-Pegel (Pan) eines Audio-Clips (war „geht nicht")</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">audioFade</td><td>★ Lautstärke-Fade per Keyframes = Ein-/Ausblenden &amp; Crossfade-Baustein (war „geht nicht")</td><td><span class="tag t-test">getestet</span></td></tr>
+        <tr data-s="ok"><td class="cmd">closeAllGaps</td><td>Lücken auf ALLEN Video- &amp; Audiospuren schließen</td><td><span class="tag t-ok">geht</span></td></tr>
+        <tr data-s="ok"><td class="cmd">ensureTrackCount</td><td>Mind. N Spuren garantieren (Auto-Erzeugung via Insert)</td><td><span class="tag t-ok">geht</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- INDIRECT -->
+  <section>
+    <h2>⚠️ Geht — aber nur indirekt</h2>
+    <p class="h2note">Die API bietet keinen direkten Befehl, das Ergebnis ist aber über einen Umweg erreichbar.</p>
+    <table id="tbl-warn">
+      <thead><tr><th>Ziel</th><th>Umweg</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr data-s="warn"><td>Neue Spur (Video/Audio) anlegen</td>
+          <td class="muted">Kein <code>addTrack</code> — wird aber <b>automatisch erzeugt</b>, wenn man einen Clip auf einen Spur-Index &gt; bisherige Spurzahl legt. Gekapselt in <code>ensureTrackCount</code> + Platzierungs-Modus</td>
+          <td><span class="tag t-warn">indirekt ✓</span></td></tr>
+        <tr data-s="warn"><td>Footage auf Clip ersetzen</td>
+          <td class="muted">Kein „replace"; aber <code>relinkMedia</code> tauscht die Quelldatei, oder remove + re-add</td>
+          <td><span class="tag t-warn">indirekt ✓</span></td></tr>
+        <tr data-s="warn"><td>Audio-Solo</td>
+          <td class="muted">Kein Solo-Flag — Workaround: alle anderen Spuren per <code>setAudioTrackMute</code> stummschalten</td>
+          <td><span class="tag t-warn">indirekt ✓</span></td></tr>
+        <tr data-s="warn"><td>Rückgängig / Wiederholen</td>
+          <td class="muted">Kein <code>undo()</code> in der API; jede Aktion ist aber ein eigener Undo-Schritt → in Premiere ⌘Z</td>
+          <td><span class="tag t-warn">manuell</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- NOT POSSIBLE -->
+  <section>
+    <h2>❌ Geht (noch) nicht — echte API-Lücken</h2>
+    <p class="h2note">Diese Funktionen fehlen in der UXP-API komplett. Spalte „Workaround" = wie wir es trotzdem lösen.</p>
+    <table id="tbl-no">
+      <thead><tr><th>Funktion</th><th>Warum nicht</th><th>Bester Ansatz (siehe unten)</th></tr></thead>
+      <tbody>
+        <tr data-s="no"><td>Clip-<b>Geschwindigkeit</b> / Time-Remap / Dauer-Stretch</td>
+          <td class="muted">Nur <code>getSpeed()</code> lesbar, kein Setter</td>
+          <td><b>① ffmpeg-Prebake</b> (Standard) · oder <b>③ FCPXML-Roundtrip</b> für In-Project-Retime</td></tr>
+        <tr data-s="no"><td>Spur <b>sperren / Solo / umbenennen</b></td>
+          <td class="muted">Spur-API kann nur Mute; <code>name</code> read-only, Lock nur als Event lesbar</td>
+          <td><b>④ UI-Automation</b> (Tastenkürzel/Klick) · Solo = andere muten</td></tr>
+        <tr data-s="no"><td><b>Multicam</b> erstellen / Kamera schalten</td>
+          <td class="muted">Nur <code>isMulticamClip()</code> lesbar</td>
+          <td><b>④ UI-Automation</b> · oder <b>③ FCPXML</b></td></tr>
+        <tr data-s="no"><td>Clips <b>synchronisieren</b> / Audio-Kanal-Mapping</td>
+          <td class="muted">Keine Merge/Sync/Mapping-API</td>
+          <td><b>④ UI-Automation</b> · Kanal-Mapping vorab in der Datei (① ffmpeg)</td></tr>
+        <tr data-s="no"><td>Marker-<b>URL/Weblink</b> setzen</td>
+          <td class="muted"><code>getUrl()</code> lesbar, kein Set-Action</td>
+          <td><b>② .prproj-XML-Edit</b> (Projekt geschlossen)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- APPROACHES -->
+  <section>
+    <h2>🔧 4 Ansätze, um das Unmögliche möglich zu machen</h2>
+    <p class="h2note">Was die UXP-API nicht direkt kann, lässt sich über genau vier Hebel doch erreichen — vom saubersten zum letzten Mittel.</p>
+    <table>
+      <thead><tr><th>Ansatz</th><th>Wie</th><th>Löst</th><th>Aufwand / Risiko</th></tr></thead>
+      <tbody>
+        <tr data-s="ok"><td><b>① Render-seitig (ffmpeg)</b></td>
+          <td class="muted">Das Effekt-Ergebnis schon beim Erzeugen der Quelldatei einbacken (Tempo via <code>setpts</code>, Kanal-Mapping, Pre-Fade). Clip kommt fertig in die Timeline.</td>
+          <td>Speed/Time-Remap, Kanal-Mapping</td>
+          <td><span class="tag t-ok">niedrig · sicher</span></td></tr>
+        <tr data-s="warn"><td><b>② .prproj-XML-Edit</b></td>
+          <td class="muted">.prproj ist gezipptes XML. Projekt schließen → entpacken → Knoten ändern (Spurnamen, Lock-Flag, Marker-URL) → packen → öffnen.</td>
+          <td>Spur sperren/umbenennen, Marker-URL</td>
+          <td><span class="tag t-warn">mittel · Backup nötig</span></td></tr>
+        <tr data-s="warn"><td><b>③ FCPXML/OTIO-Roundtrip</b></td>
+          <td class="muted">Sequenz raus (<code>exportFCPXML</code> ✓ vorhanden) → XML programmatisch umbauen (Retime, Struktur) → zurück importieren. Für das, was die API strukturell nicht anfasst.</td>
+          <td>In-Project-Retime, exotische Struktur</td>
+          <td><span class="tag t-warn">mittel-hoch</span></td></tr>
+        <tr data-s="no"><td><b>④ UI-Automation</b></td>
+          <td class="muted">AppleScript / „System Events" steuert Premieres Oberfläche per Tastenkürzel &amp; Klick (Spur-Header sperren, Multicam-Menü, Sync). Nutzt die vorhandene Fernsteuerung (Tailscale + Screen Sharing).</td>
+          <td>Alles mit Menü/Shortcut: Lock, Solo, Multicam, Sync</td>
+          <td><span class="tag t-no">universell · fragil</span></td></tr>
+      </tbody>
+    </table>
+    <p class="h2note" style="margin-top:14px">Empfehlung: ① für Tempo &amp; Audio-Vorbereitung (machen wir eh), ④ nur für die seltenen Spur-/Multicam-Fälle. ③ baue ich auf Zuruf, wenn In-Project-Retime gebraucht wird.</p>
+  </section>
+
+  <!-- HOW TO -->
+  <section>
+    <h2>So rufst du alles auf</h2>
+    <p class="h2note">Aus <code>~/.claude/adb-mcp</code>, Premiere muss offen + das Plugin geladen sein (Proxy auf Port 3030).</p>
+    <div class="usage"># Beliebigen Befehl senden:
+node premiere_drive.js cmd &lt;befehl&gt; '&lt;json-optionen&gt;'
+
+# Bilder/Clips rot markieren (Kurzform):
+node premiere_drive.js label red  clipA.mov clipB.mov
+# Farben: red rot | blue blau | green grün | yellow gelb | magenta | orange | purple lila | teal | tan | brown
+
+# Beispiele:
+node premiere_drive.js cmd listVideoTransitions
+node premiere_drive.js cmd getSequenceSettings '{"sequenceId":"&lt;id&gt;"}'
+node premiere_drive.js cmd setColorLabel '{"itemNames":["foo.mov"],"colorName":"blue"}'
+node premiere_drive.js cmd moveClip '{"sequenceId":"&lt;id&gt;","trackIndex":9,"trackItemIndex":0,"trackType":"VIDEO","offsetSeconds":1.5}'
+node premiere_drive.js cmd exportFCPXML '{"sequenceId":"&lt;id&gt;","outputPath":"/Users/.../out.fcpxml"}'
+
+# Effekt-/Farb-/Audio-Engine:
+node premiere_drive.js cmd inspectClip   '{"sequenceId":"&lt;id&gt;","trackIndex":9,"trackItemIndex":0,"trackType":"VIDEO"}'
+node premiere_drive.js cmd setColorGrade '{"sequenceId":"&lt;id&gt;","videoTrackIndex":9,"trackItemIndex":0,"contrast":18,"exposure":0.15,"saturation":112,"temperature":8}'
+node premiere_drive.js cmd setClipTransform '{"sequenceId":"&lt;id&gt;","videoTrackIndex":9,"trackItemIndex":0,"scale":90,"position":[1920,1080],"opacity":80}'
+node premiere_drive.js cmd setClipVolume '{"sequenceId":"&lt;id&gt;","audioTrackIndex":9,"trackItemIndex":0,"level":-6}'
+node premiere_drive.js cmd audioFade     '{"sequenceId":"&lt;id&gt;","audioTrackIndex":9,"trackItemIndex":0,"startSeconds":0,"endSeconds":0.5,"fromDb":-60,"toDb":0}'
+node premiere_drive.js cmd addKeyframe   '{"sequenceId":"&lt;id&gt;","trackIndex":9,"trackItemIndex":0,"trackType":"VIDEO","matchName":"AE.ADBE Opacity","paramIndex":0,"atSeconds":0.3,"value":100}'
+node premiere_drive.js cmd setInputLUT   '{"itemName":"clip.mov","lutId":"/Pfad/zur/look.cube"}'</div>
+  </section>
+
+</div>
+
+<footer>
+  Stand: Premiere Pro 26.2.2 · UXP-API v25.6 · Plugin <code>com.adbmcp.premiere</code> ·
+  Quelle: offizielle Adobe-UXP-Referenz (60 Klassen) · generiert für Simon
+</footer>
+
+<script>
+  const q = document.getElementById('q');
+  const chips = [...document.querySelectorAll('.chip')];
+  let filter = 'all';
+  function apply(){
+    const term = q.value.trim().toLowerCase();
+    document.querySelectorAll('tbody tr').forEach(tr=>{
+      const matchText = tr.textContent.toLowerCase().includes(term);
+      const matchState = filter==='all' || tr.dataset.s===filter;
+      tr.style.display = (matchText && matchState) ? '' : 'none';
+    });
+    // hide a section if it has no visible rows
+    document.querySelectorAll('section').forEach(sec=>{
+      const rows=[...sec.querySelectorAll('tbody tr')];
+      if(!rows.length) return;
+      const anyVisible=rows.some(r=>r.style.display!=='none');
+      sec.style.display = anyVisible ? '' : 'none';
+    });
+  }
+  q.addEventListener('input',apply);
+  chips.forEach(c=>c.addEventListener('click',()=>{
+    chips.forEach(x=>x.classList.remove('active'));
+    c.classList.add('active'); filter=c.dataset.f; apply();
+  }));
+</script>
+</body>
+</html>

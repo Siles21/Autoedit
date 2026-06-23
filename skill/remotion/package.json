@@ -1,0 +1,27 @@
+{
+  "name": "premiere-sub-animations-remotion",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/Root.tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/animation-utils": "4.0.467",
+    "@remotion/cli": "4.0.467",
+    "@remotion/google-fonts": "4.0.467",
+    "@remotion/lottie": "^4.0.467",
+    "@remotion/motion-blur": "4.0.467",
+    "@remotion/paths": "4.0.467",
+    "@remotion/shapes": "4.0.467",
+    "@remotion/transitions": "4.0.467",
+    "lottie-web": "^5.13.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remotion": "4.0.467"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "typescript": "5.4.5"
+  }
+}

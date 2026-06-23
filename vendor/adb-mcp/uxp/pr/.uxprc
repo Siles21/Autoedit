@@ -1,0 +1,18 @@
+{
+    "plugin": {
+        "sessions": [
+            {
+                "app": {
+                    "id": "premierepro",
+                    "version": "26.2.2",
+                    "name": "Premiere Pro"
+                },
+                "pluginSessionId": "4098ce2f-fead-47ea-b1a2-bc80fae4ebe3"
+            }
+        ],
+        "info": {
+            "id": "Premiere MCP Agent",
+            "name": "Premiere MCP Agent"
+        }
+    }
+}

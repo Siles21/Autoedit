@@ -1,0 +1,55 @@
+{
+  "id": "com.adbmcp.premiere",
+  "name": "Premiere MCP Agent",
+  "version": "0.85.3",
+  "main": "index.html",
+  "host": {
+    "app": "premierepro",
+    "minVersion": "25.0"
+  },
+  "manifestVersion": 5,
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "vanilla",
+      "minimumSize": {
+        "width": 300,
+        "height": 200
+      },
+      "maximumSize": {
+        "width": 300,
+        "height": 200
+      },
+      "preferredDockedSize": {
+        "width": 300,
+        "height": 200
+      },
+      "preferredFloatingSize": {
+        "width": 300,
+        "height": 200
+      },
+      "label": {
+        "default": "Premiere MCP Agent"
+      }
+    }
+  ],
+  "requiredPermissions": {
+    "localFileSystem": "fullAccess",
+    "clipboard": "readAndWrite",
+    "ipc": {
+      "enablePluginCommunication": true
+    },
+    "network": {
+      "domains": [
+        "http://localhost:3030",
+        "http://127.0.0.1:3030",
+        "ws://localhost:3030",
+        "ws://127.0.0.1:3030"
+      ]
+    }
+  },
+  "featureFlags": {
+    "allowFocusOnClickForPanels": true,
+    "enableAlerts": true
+  }
+}

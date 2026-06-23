@@ -1,0 +1,28 @@
+[
+  {
+    "name": "yt_steuer_haupt",
+    "plan": "~/Desktop/SubAnimations/plans/steuer_haupt.plan.json",
+    "out": "~/Desktop/SubAnimations/yt_steuer_haupt/v1",
+    "transcript": "~/Desktop/SubAnimations/src/steuer_haupt.transcript.json",
+    "format": "16x9",
+    "brand": "thorben",
+    "fps": 50,
+    "deliver": "premiere"
+  },
+  {
+    "name": "reel_objekt_tour",
+    "plan": "~/Desktop/SubAnimations/plans/reel_objekt_tour.plan.json",
+    "out": "~/Desktop/SubAnimations/reel_objekt_tour/v1",
+    "video": "~/Desktop/SubAnimations/src/reel_objekt_tour.mp4",
+    "format": "9x16",
+    "fps": 30,
+    "reel": true,
+    "reelZoom": 0.06,
+    "reelPeriod": 14,
+    "reelJump": 10,
+    "reelJumpAmt": 0.08,
+    "music": "~/Desktop/SubAnimations/music/soft_bed.mp3",
+    "musicGain": -20,
+    "deliver": "flat"
+  }
+]

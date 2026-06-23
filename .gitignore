@@ -1,0 +1,29 @@
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# --- Node ---
+node_modules/
+.npm-cache/
+
+# --- Render / work artifacts ---
+*.words.json
+.render-hashes.json
+work/
+out/
+*.log
+
+# --- adb-mcp runtime junk ---
+vendor/adb-mcp/proxy.log
+vendor/adb-mcp/proxy.restart.log
+vendor/adb-mcp/uxp-service.log
+vendor/adb-mcp/.target-seq.json
+
+# --- OS ---
+.DS_Store
+
+# --- local config (copy from config.example.json) ---
+config.json

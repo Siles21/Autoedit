@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "note": "Beispiel-Plan nach Claude-Kuratierung + Simons Freigabe. Du-Form, keine Emojis.",
+  "animations": [
+    {
+      "id": "n1",
+      "type": "stat",
+      "anchorPhrase": "4,2 prozent",
+      "atSeconds": 73.4,
+      "hold": 2.8,
+      "content": { "value": "4,2 %", "label": "Durchschnittliche Mietrendite", "sublabel": "über alle Standorte" }
+    },
+    {
+      "id": "e1",
+      "type": "enumeration",
+      "anchorPhrase": "drei dinge",
+      "atSeconds": 121.0,
+      "hold": 6.5,
+      "content": { "label": "Worauf du achtest", "items": ["Lage & Mikrolage", "Steuerliche Hebel", "Netto-Cashflow"] }
+    },
+    {
+      "id": "r1",
+      "type": "reveal",
+      "anchorPhrase": "und genau hier",
+      "atSeconds": 184.6,
+      "hold": 3.2,
+      "content": { "teaser": "Der entscheidende Punkt", "text": "Du zahlst die Immobilie nicht — der Mieter und das Finanzamt tun es." }
+    },
+    {
+      "id": "l1",
+      "type": "lowerthird",
+      "anchorPhrase": "sonderabschreibung",
+      "atSeconds": 210.2,
+      "hold": 3.5,
+      "content": { "text": "Sonderabschreibung §7b EStG", "sublabel": "5 % zusätzlich, 4 Jahre" }
+    }
+  ]
+}

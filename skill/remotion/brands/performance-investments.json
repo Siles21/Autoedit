@@ -1,0 +1,16 @@
+{
+  "name": "Performance Investments",
+  "font": "Sora",
+  "colors": {
+    "primary": "#14110D",
+    "primaryDark": "#0A0805",
+    "accent": "#C99A5B",
+    "muted": "rgba(245,239,230,0.6)",
+    "white": "#F5EFE6"
+  },
+  "motion": {
+    "ease": [0.16, 1, 0.3, 1],
+    "easeSnap": [0.7, 0, 0.3, 1],
+    "feel": "cinematic"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Your Brand",
+  "font": "Montserrat",
+  "colors": {
+    "primary": "#10243F",
+    "primaryDark": "#0A1626",
+    "accent": "#4C8DFF",
+    "muted": "rgba(255,255,255,0.72)",
+    "white": "#FFFFFF"
+  }
+}

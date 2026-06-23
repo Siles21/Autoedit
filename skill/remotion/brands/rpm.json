@@ -1,0 +1,11 @@
+{
+  "name": "RPM Studio (Dubai)",
+  "font": "Poppins",
+  "colors": {
+    "primary": "#1A1A1A",
+    "primaryDark": "#000000",
+    "accent": "#E8730B",
+    "muted": "rgba(245,237,225,0.72)",
+    "white": "#F5EDE1"
+  }
+}
