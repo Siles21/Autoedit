@@ -30,6 +30,18 @@ Skills** benötigt.
 ./setup.sh --no-live  # ohne adb-mcp (nur Render + FCP7-XML-Export)
 ```
 
+Der Skill wird dabei automatisch bei Claude registriert (`~/.claude/skills/premiere-sub-animations`
+→ Symlink auf `skill/`, bleibt per `git pull` aktuell). Nur verlinken, ohne Deps:
+`./setup.sh --install-skill`. Nicht verlinken: `./setup.sh --no-skill`.
+
+**Umgebung prüfen (jederzeit):**
+```bash
+python3 skill/scripts/doctor.py          # Report mit Fix-Befehlen
+python3 skill/scripts/doctor.py --json   # für Claude
+```
+
+**Anleitung für Mitarbeiter:** `docs/MITARBEITER.md` (kein CLI-Wissen nötig).
+
 Das installiert die Python-Deps in eine **isolierte venv** (`./.venv`, funktioniert
 auch mit Homebrew-Python / PEP 668), die Remotion-`node_modules`, und – beim
 Live-Setup – die adb-mcp-Bridge. Danach laufen die Selbsttests.

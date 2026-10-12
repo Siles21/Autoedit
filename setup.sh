@@ -7,11 +7,49 @@
 set -uo pipefail
 KIT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WITH_LIVE=1
-[ "${1:-}" = "--no-live" ] && WITH_LIVE=0
+WITH_SKILL=1
+ONLY_SKILL=0
+for arg in "$@"; do
+  case "$arg" in
+    --no-live)       WITH_LIVE=0 ;;
+    --no-skill)      WITH_SKILL=0 ;;
+    --install-skill) ONLY_SKILL=1 ;;
+    -h|--help)
+      echo "usage: ./setup.sh [--no-live] [--no-skill] [--install-skill]"
+      echo "  --no-live        ohne adb-mcp Live-Bridge (Render + FCPXML-Weg)"
+      echo "  --no-skill       Skill nicht nach ~/.claude/skills verlinken"
+      echo "  --install-skill  NUR den Claude-Skill verlinken (keine Deps)"
+      exit 0 ;;
+  esac
+done
 
 ok()   { printf "\033[32m✓\033[0m %s\n" "$1"; }
 warn() { printf "\033[33m!\033[0m %s\n" "$1"; }
 die()  { printf "\033[31m✗ %s\033[0m\n" "$1"; exit 1; }
+
+# ---------- claude skill registration ----------
+# Claude lädt Skills aus ~/.claude/skills/<name>/SKILL.md. Wir verlinken (nicht
+# kopieren), damit ein `git pull` im Kit sofort wirkt. kit-root.txt trägt den
+# absoluten Kit-Pfad, damit Claude vom Symlink aus venv + scripts findet.
+install_skill() {
+  local dest_dir="$HOME/.claude/skills"
+  local dest="$dest_dir/premiere-sub-animations"
+  mkdir -p "$dest_dir" || { warn "konnte $dest_dir nicht anlegen"; return 1; }
+  printf '%s\n' "$KIT" > "$KIT/skill/kit-root.txt"
+  if [ -L "$dest" ]; then
+    rm -f "$dest"
+  elif [ -e "$dest" ]; then
+    warn "$dest existiert als echter Ordner — nicht angetastet. Manuell entfernen, dann ./setup.sh --install-skill"
+    return 1
+  fi
+  ln -s "$KIT/skill" "$dest" || { warn "Symlink fehlgeschlagen: $dest"; return 1; }
+  ok "Claude-Skill verlinkt: $dest → $KIT/skill"
+}
+
+if [ "$ONLY_SKILL" = "1" ]; then
+  install_skill && echo && ok "Fertig. Claude kennt den Skill jetzt (neue Session starten)."
+  exit $?
+fi
 
 echo "== Premiere Sub-Animations — setup =="
 echo "Kit: $KIT"
@@ -73,6 +111,17 @@ if [ "$WITH_LIVE" = "1" ]; then
 else
   warn "skipped live bridge (--no-live). Fallback path (FCP7-XML/placement.md) still works."
 fi
+
+# ---------- 5. claude skill ----------
+if [ "$WITH_SKILL" = "1" ]; then
+  install_skill || warn "Skill-Registrierung übersprungen (Pipeline läuft trotzdem per CLI)"
+else
+  warn "Skill nicht verlinkt (--no-skill)"
+fi
+
+# ---------- 6. final diagnosis ----------
+echo "→ Umgebungs-Check…"
+python3 "$KIT/skill/scripts/doctor.py" --kit "$KIT" || warn "doctor.py meldet blockierende Punkte (siehe oben)"
 
 echo
 ok "Setup done."

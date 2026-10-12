@@ -15,6 +15,69 @@ Automatisierter Workflow: **fertig geschnittenes Premiere-Video + Transkript →
 > - **Branding/Farben** kommen ausschließlich aus `--brand <name>` → `remotion/brands/<name>.json`. Default-Preset ist `default`; lege dein eigenes an (siehe `remotion/brands/default.json`). Die Beispiel-Presets (`neocore`, `rpm`, `thorben`, `performance-investments`) sind nur Vorlagen.
 > - Inline-Notizen wie „(Memory …)", „(Simon …)" oder „[[…]]" sind **interne Entwicklungs-Referenzen** und können ignoriert werden — sie verweisen auf nichts in diesem Kit. Die genannten Regeln (z. B. Du-Form, keine Emojis, Zahlen nie erfinden) sind sinnvolle Defaults; passe sie an deine Marke/Sprache an.
 
+## Schnellstart — so fährt Claude diesen Skill (IMMER zuerst)
+
+Der Mitarbeiter kennt keine Befehle. Er sagt nur „mach Sub-Animationen für dieses Video"
+und gibt einen Pfad. Claude fährt dann diese Schritte — **in dieser Reihenfolge, ohne
+Rückfragen außer den drei unter Schritt 2**.
+
+**Schritt 0 — Kit finden + Umgebung prüfen (Pflicht, jede Session):**
+```bash
+KIT="$(cat ~/.claude/skills/premiere-sub-animations/kit-root.txt)"   # absoluter Kit-Pfad
+PY="$KIT/.venv/bin/python"                                            # IMMER diese Python nutzen
+python3 "$KIT/skill/scripts/doctor.py" --json
+```
+- `ready:false` → Claude nennt dem Mitarbeiter die `fix`-Zeile aus dem Report (meist `$KIT/setup.sh`) und **stoppt**. Nicht improvisieren, nicht ohne venv weiterrechnen.
+- `placement:"live"` → Weg A (Stufe 5, direkt in die offene Sequenz). `placement:"fallback"` → Weg B (FCPXML + `placement.md`). Nicht nachfragen, der Report entscheidet.
+- `brands` im Report listet die verfügbaren Presets.
+
+**Schritt 1 — Input beschaffen.** Zwei Wege, der schnellere zuerst:
+- Premiere hat die Sequenz schon transkribiert (Text-Based Editing → Transkript als JSON exportieren) → `$PY "$KIT/skill/scripts/premiere_transcript.py" <transcript.json> --out <vN>/words.json`. **Kein Whisper, keine Wartezeit.**
+- Sonst: finales Video exportieren lassen → `$PY "$KIT/skill/scripts/align_words.py" <final.mp4> --out <vN>/words.json` (Whisper, dauert).
+
+Arbeitsordner immer versioniert: `~/Desktop/SubAnimations/<videoname>/v1/`, `v2/`, … — nie überschreiben.
+
+**Schritt 2 — die einzigen drei Fragen an den Mitarbeiter** (alles andere sind Defaults):
+1. **Pfad** zum Video oder zum Premiere-Transkript-JSON
+2. **Format**: 16:9, 9:16 oder beides (Default: 16x9)
+3. **Brand-Preset** (Default: das erste nicht-`default` Preset aus dem doctor-Report, sonst `default`)
+
+**Schritt 3 — Plan bauen (Claude, nicht der Mitarbeiter).** Entwurf erzeugen, dann nach
+dem Playbook weiter unten kuratieren — Zahlen, Aufzählungen, Reveals, Vergleiche, CTA:
+```bash
+$PY "$KIT/skill/scripts/build_plan.py" <vN>/words.json --out <vN>/animation-plan.draft.json
+# Claude liest words.json, schreibt animation-plan.json, dann:
+$PY "$KIT/skill/scripts/build_plan.py" --validate <vN>/animation-plan.json
+```
+Harte Regeln: **Zahlen niemals erfinden** (nur was gesprochen wird), Du-Form, keine Emojis,
+Lower-Thirds nur für Personen, max 10 s pro Animation, alle ≤5 s ein visuelles Ereignis.
+
+**Schritt 4 — Freigabe-Gate (Pflicht-Stopp).** Tabelle zeigen: **Timecode · Typ · Inhalt · Dauer**.
+Der Mitarbeiter sagt behalten/streichen/Text ändern/verschieben. Korrekturen einarbeiten,
+neu validieren, erst dann weiter. Nur überspringen, wenn er ausdrücklich „ohne Gate" sagt.
+
+**Schritt 5 — ein Befehl für den ganzen Rest** (resolve → QC-Gates → Render → Integration):
+```bash
+$PY "$KIT/skill/scripts/pipeline.py" --plan <vN>/animation-plan.json --out <vN> \
+    --transcript <transcript.json>   # oder --words / --video
+    --brand <preset> --format 16x9 --fps 30
+```
+Danach Sound: `add_sfx.py` (automatisch in `pipeline.py`), Musik optional `--music`.
+
+**Schritt 6 — Platzieren + auditieren.** Live: `node "$KIT/vendor/adb-mcp/premiere_drive.js"`
+(Stufe 5, Weg A) → danach **immer** `audit_placements.py` (Stufe 9) und bei Drift `reconcile`.
+Fallback: `placement.md` + `overlays.fcpxml` dem Mitarbeiter nennen und erklären, dass die
+`.mov`-Dateien einen echten Alpha-Kanal haben (direkt über V1 legen).
+
+**Schritt 7 — Abschluss.** QC-Checkliste (`qc.py`) durchgehen, dem Mitarbeiter in einem Satz
+sagen: wie viele Animationen, welches Format, wo die Dateien liegen, was er noch prüfen soll.
+
+**Wenn etwas fehlschlägt:** `doctor.py --json` erneut laufen lassen, die `fix`-Zeile nennen,
+niemals Pfade/venv/Befehle improvisieren. Bricht ein QC-Gate, den Grund nennen statt
+stillschweigend weiterzurendern.
+
+---
+
 ## Wann dieser Skill
 
 Der User hat ein **bereits geschnittenes** Video (YouTube / Seminar) und will automatisch Sub-Animationen reinbekommen, die:

@@ -27,3 +27,6 @@ vendor/adb-mcp/.target-seq.json
 
 # --- local config (copy from config.example.json) ---
 config.json
+
+# --- machine-specific (written by setup.sh --install-skill) ---
+skill/kit-root.txt
