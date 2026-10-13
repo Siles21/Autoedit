@@ -1,0 +1,71 @@
+{
+  "_comment": "Kopie nach watcher/config.json, dann anpassen. config.json ist gitignored (enthaelt den Refresh-Token).",
+
+  "dropbox": {
+    "app_key": "",
+    "app_secret": "",
+    "refresh_token": "",
+    "watch_path": "/Video Upload",
+    "team_member_id": "",
+    "path_root": ""
+  },
+
+  "watch": {
+    "quiet_seconds": 180,
+    "job_depth": 2,
+    "longpoll_timeout": 180,
+    "recheck_seconds": 60,
+    "backfill_on_first_run": true,
+    "emit_without_video": false,
+    "max_jobs_per_cycle": 50,
+    "ignore_paths": [
+      "/Video Upload/_Archiv",
+      "/Video Upload/_Fertig"
+    ]
+  },
+
+  "consultants": [
+    {
+      "id": "thorben",
+      "name": "Thorben",
+      "path": "/Video Upload/Thorben",
+      "aliases": ["TM", "Thorben M"],
+      "clickup": {
+        "space_id": "",
+        "folder_id": "",
+        "list_id": "",
+        "assignee": ""
+      }
+    },
+    {
+      "id": "simon",
+      "name": "Simon",
+      "aliases": ["Si"],
+      "clickup": {
+        "space_id": "",
+        "folder_id": "",
+        "list_id": "",
+        "assignee": ""
+      }
+    }
+  ],
+
+  "triage": {
+    "consultant_id": "_triage",
+    "clickup": {
+      "list_id": "",
+      "note": "Zwischenordner: Berater unklar -> Part 2 legt die Task hier ab, Mensch oder KI sortiert nach."
+    }
+  },
+
+  "output": {
+    "dir": "watcher",
+    "queue_dir": "watcher/queue",
+    "event_log": "watcher/events.jsonl",
+    "state_file": "watcher/state.json",
+    "hook_command": "",
+    "hook_timeout": 900,
+    "webhook_url": "",
+    "webhook_secret": ""
+  }
+}

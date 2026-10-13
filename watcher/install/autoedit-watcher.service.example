@@ -1,0 +1,20 @@
+# Vorlage: User + Pfade anpassen, nach /etc/systemd/system/autoedit-watcher.service kopieren
+[Unit]
+Description=Autoedit Dropbox-Watcher (Part 1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=DEINUSER
+WorkingDirectory=/ABSOLUTER/PFAD/zum/Autoedit/watcher
+ExecStart=/usr/bin/python3 /ABSOLUTER/PFAD/zum/Autoedit/watcher/dbx_watch.py watch
+Environment=PYTHONUNBUFFERED=1
+Restart=always
+RestartSec=30
+# Optional statt config.json:
+# Environment=DROPBOX_APP_KEY=...
+# Environment=DROPBOX_REFRESH_TOKEN=...
+
+[Install]
+WantedBy=multi-user.target

@@ -27,3 +27,11 @@ vendor/adb-mcp/.target-seq.json
 
 # --- local config (copy from config.example.json) ---
 config.json
+
+# --- Dropbox-Watcher (Part 1) runtime ---
+watcher/config.json
+watcher/state.json
+watcher/state.*.json
+watcher/events.jsonl
+watcher/queue/*.json
+watcher/*.corrupt.json
