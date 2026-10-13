@@ -1,0 +1,85 @@
+{
+  "_comment": "Kopie nach watcher/config.json, dann anpassen. config.json ist gitignored (enthaelt den Refresh-Token).",
+  "_clickup": "space_id 90124915942 = Fullfillment Neocore, folder_id 90127251518 = Ordner 'Reel' (dort liegen die Personen-Listen). list_id je Berater ist die Personen-Liste in diesem Ordner.",
+
+  "dropbox": {
+    "app_key": "",
+    "app_secret": "",
+    "refresh_token": "",
+    "watch_path": "/Video Upload",
+    "team_member_id": "",
+    "path_root": ""
+  },
+
+  "watch": {
+    "quiet_seconds": 180,
+    "job_depth": 2,
+    "longpoll_timeout": 180,
+    "recheck_seconds": 60,
+    "backfill_on_first_run": true,
+    "emit_without_video": false,
+    "max_jobs_per_cycle": 50,
+    "ignore_paths": [
+      "/Video Upload/_Archiv",
+      "/Video Upload/_Fertig"
+    ]
+  },
+
+  "consultants": [
+    {
+      "id": "robert",
+      "name": "Robert",
+      "path": "/Video Upload/Robert",
+      "aliases": ["Rob"],
+      "clickup": {
+        "space_id": "90124915942",
+        "folder_id": "90127251518",
+        "list_id": "901223289193",
+        "assignee": ""
+      }
+    },
+    {
+      "id": "tom",
+      "name": "Tom",
+      "path": "/Video Upload/Tom",
+      "aliases": [],
+      "clickup": {
+        "space_id": "90124915942",
+        "folder_id": "90127251518",
+        "list_id": "901223289198",
+        "assignee": ""
+      }
+    },
+    {
+      "id": "jonas-dorsch",
+      "name": "Jonas Dorsch",
+      "path": "/Video Upload/Jonas Dorsch",
+      "aliases": ["Jonas", "Dorsch"],
+      "clickup": {
+        "space_id": "90124915942",
+        "folder_id": "90127251518",
+        "list_id": "901223289205",
+        "assignee": ""
+      }
+    }
+  ],
+
+  "triage": {
+    "consultant_id": "_triage",
+    "clickup": {
+      "list_id": "901223289242",
+      "note": "Liste 'Reel-Intake (unsortiert)' im Ordner Reel: Berater unklar (needs_triage) -> Part 2 legt die Task hier ab, Mensch oder KI sortiert nach."
+    }
+  },
+
+  "output": {
+    "dir": "watcher",
+    "queue_dir": "watcher/queue",
+    "event_log": "watcher/events.jsonl",
+    "state_file": "watcher/state.json",
+    "hook_command": "",
+    "hook_timeout": 900,
+    "webhook_url": "",
+    "webhook_secret": ""
+  }
+}

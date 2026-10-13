@@ -1,0 +1,74 @@
+[
+  {
+    "path": "/Video Upload/Robert/Reel 014 Zinswende/Reel 014.mp4",
+    "size": 820000000,
+    "server_modified": "2026-10-13T10:00:00Z",
+    "rev": "a1"
+  },
+  {
+    "path": "/Video Upload/Robert/Reel 014 Zinswende/Reel 014.txt",
+    "size": 5200,
+    "server_modified": "2026-10-13T10:01:00Z",
+    "rev": "a2"
+  },
+  {
+    "path": "/Video Upload/Robert/Reel 014 Zinswende/Reel 014.pdf",
+    "size": 180000,
+    "server_modified": "2026-10-13T10:01:30Z",
+    "rev": "a3"
+  },
+  {
+    "path": "/Video Upload/Robert/Reel 014 Zinswende/.DS_Store",
+    "size": 6148,
+    "server_modified": "2026-10-13T10:02:00Z",
+    "rev": "a4"
+  },
+  {
+    "path": "/Video Upload/Robert/Reel 014 Zinswende/Footage/B-Roll.mov",
+    "size": 410000000,
+    "server_modified": "2026-10-13T10:03:00Z",
+    "rev": "a5"
+  },
+  {
+    "path": "/Video Upload/Jonas Dorsch/Seminar 03/Seminar 03.mp4",
+    "size": 3400000000,
+    "server_modified": "2026-10-13T09:10:00Z",
+    "rev": "b1"
+  },
+  {
+    "path": "/Video Upload/Jonas Dorsch/Seminar 03/Seminar 03_transkript.txt",
+    "size": 61000,
+    "server_modified": "2026-10-13T09:12:00Z",
+    "rev": "b2"
+  },
+  {
+    "path": "/Video Upload/Unbekannt/Reel 002/take_01.mp4",
+    "size": 290000000,
+    "server_modified": "2026-10-13T11:59:10Z",
+    "rev": "c1"
+  },
+  {
+    "path": "/Video Upload/Tom/Reel 007 Cashflow/Reel 007.mov",
+    "size": 1240000000,
+    "server_modified": "2026-10-13T08:40:00Z",
+    "rev": "f1"
+  },
+  {
+    "path": "/Video Upload/Tom/Reel 007 Cashflow/Reel 007.srt",
+    "size": 14000,
+    "server_modified": "2026-10-13T08:41:00Z",
+    "rev": "f2"
+  },
+  {
+    "path": "/Video Upload/_Archiv/2025/alt.mp4",
+    "size": 100000,
+    "server_modified": "2026-01-01T09:00:00Z",
+    "rev": "d1"
+  },
+  {
+    "path": "/Video Upload/Robert/Unterlagen/Onepager.pdf",
+    "size": 240000,
+    "server_modified": "2026-10-13T08:00:00Z",
+    "rev": "e1"
+  }
+]

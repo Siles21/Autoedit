@@ -115,6 +115,22 @@ premiere-sub-animations-kit/
     └── adb-mcp/               ← Live-Premiere-Bridge (Drittsoftware, MIT)
 ```
 
+## 8. Dropbox-Watcher (Part 1 der Video-Automation)
+
+Neben dem Premiere-Kit liegt in `watcher/` der **Dropbox-Überwacher**: er erkennt
+neue Uploads, bündelt sie pro Ordner zu einem Job (Video + Skript + Transkript),
+wartet bis der Ordner durchsynct ist, ordnet den Berater zu und übergibt ein
+Job-JSON an die nächste Stufe (ClickUp). Stdlib-only, kein `pip install`.
+
+```bash
+cd watcher && cp config.example.json config.json
+python3 dbx_watch.py auth      # Dropbox verbinden (einmalig)
+python3 dbx_watch.py doctor    # Pfad + Berater-Zuordnung prüfen
+python3 dbx_watch.py watch     # Dauerbetrieb
+```
+
+Details: **`watcher/README.md`** · Gesamtplan Part 1–5: **`docs/AUTOMATION-PIPELINE.md`**
+
 ## Lizenz / Drittsoftware
 
 `vendor/adb-mcp/` ist Drittsoftware von Mike Chambers
