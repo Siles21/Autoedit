@@ -1,5 +1,6 @@
 {
   "_comment": "Kopie nach watcher/config.json, dann anpassen. config.json ist gitignored (enthaelt den Refresh-Token).",
+  "_clickup": "space_id 90124915942 = Fullfillment Neocore, folder_id 90127251518 = Ordner 'Reel' (dort liegen die Personen-Listen). list_id je Berater eintragen, sobald die Liste existiert.",
 
   "dropbox": {
     "app_key": "",
@@ -26,24 +27,37 @@
 
   "consultants": [
     {
-      "id": "thorben",
-      "name": "Thorben",
-      "path": "/Video Upload/Thorben",
-      "aliases": ["TM", "Thorben M"],
+      "id": "robert",
+      "name": "Robert",
+      "path": "/Video Upload/Robert",
+      "aliases": ["Rob"],
       "clickup": {
-        "space_id": "",
-        "folder_id": "",
+        "space_id": "90124915942",
+        "folder_id": "90127251518",
         "list_id": "",
         "assignee": ""
       }
     },
     {
-      "id": "simon",
-      "name": "Simon",
-      "aliases": ["Si"],
+      "id": "tom",
+      "name": "Tom",
+      "path": "/Video Upload/Tom",
+      "aliases": [],
       "clickup": {
-        "space_id": "",
-        "folder_id": "",
+        "space_id": "90124915942",
+        "folder_id": "90127251518",
+        "list_id": "",
+        "assignee": ""
+      }
+    },
+    {
+      "id": "jonas-dorsch",
+      "name": "Jonas Dorsch",
+      "path": "/Video Upload/Jonas Dorsch",
+      "aliases": ["Jonas", "Dorsch"],
+      "clickup": {
+        "space_id": "90124915942",
+        "folder_id": "90127251518",
         "list_id": "",
         "assignee": ""
       }

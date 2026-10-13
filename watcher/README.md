@@ -62,8 +62,11 @@ Dann `config.json` anpassen:
 "dropbox": { "watch_path": "/Video Upload" },      // wo die Berater hochladen
 "watch":   { "quiet_seconds": 180, "job_depth": 2 },
 "consultants": [                                    // Berater -> ClickUp-Ziel
-  { "id": "thorben", "name": "Thorben", "path": "/Video Upload/Thorben",
-    "clickup": { "list_id": "901234567" } }
+  { "id": "robert",       "name": "Robert",       "path": "/Video Upload/Robert" },
+  { "id": "tom",          "name": "Tom",          "path": "/Video Upload/Tom" },
+  { "id": "jonas-dorsch", "name": "Jonas Dorsch", "path": "/Video Upload/Jonas Dorsch",
+    "aliases": ["Jonas", "Dorsch"],
+    "clickup": { "space_id": "90124915942", "folder_id": "90127251518", "list_id": "" } }
 ]
 ```
 
@@ -83,7 +86,7 @@ python3 dbx_watch.py scan                 # Bestand einlesen, reife Jobs ausspie
 python3 dbx_watch.py scan --dry-run       # erst mal nur zeigen
 python3 dbx_watch.py watch                # Dauerbetrieb (Longpoll)
 python3 dbx_watch.py status               # was wartet, was ist raus
-python3 dbx_watch.py forget "/Video Upload/Thorben/Reel 014"   # neu ausspielen
+python3 dbx_watch.py forget "/Video Upload/Robert/Reel 014"   # neu ausspielen
 python3 dbx_watch.py selftest             # komplette Logik offline (kein Netz)
 ```
 
@@ -130,8 +133,13 @@ Eine Datei pro Job in `queue/<ts>-<job_id>-r<rev>.json`, dazu eine Zeile in
 ### Berater-Zuordnung
 
 Reihenfolge: `path`-Prefix → exaktes Pfadsegment (Alias/Slug, umlaut- und
-schreibweisentolerant) → Substring → **Triage**. Kein Treffer heißt nie
-„verworfen": der Job geht mit `needs_triage: true` an den Zwischenordner.
+schreibweisentolerant) → Alias als **ganzes Wort** im Pfad → **Triage**. Kein
+Treffer heißt nie „verworfen": der Job geht mit `needs_triage: true` an den
+Zwischenordner.
+
+Wortgrenzen sind bei kurzen Namen entscheidend: `Tom` trifft
+`/Video Upload/Reels Tom Oktober/`, aber **nicht** `/Video Upload/Automation/`.
+Dateistämme sind egal — zugeordnet wird immer über den Ordnerpfad.
 
 ## 6. Anschluss von Part 2
 

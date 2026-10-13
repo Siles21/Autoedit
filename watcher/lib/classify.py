@@ -154,7 +154,7 @@ def resolve_consultant(path: str, consultants: list[dict], default_id: str = "_t
     Matching-Reihenfolge (spezifisch -> unscharf):
       1. path_prefix : Eintrag hat "path" und der Ordner liegt darunter
       2. segment     : ein Pfadsegment entspricht genau einem Alias/Slug
-      3. substring   : ein Alias kommt irgendwo im Pfad vor
+      3. word       : ein Alias steht als ganzes Wort im Pfad
       4. default     : Zwischenordner / Triage (Mensch oder Part 2 entscheidet)
 
     Rückgabe: {"id","name","matched_by","matched_on","clickup",...} — der
@@ -186,14 +186,23 @@ def resolve_consultant(path: str, consultants: list[dict], default_id: str = "_t
             if a_folded in folded_segs or (a_slug and a_slug in slug_segs):
                 return hit(entry, "segment", alias)
 
+    slugged_path = slug(path or "")
     for entry in consultants:
         for alias in _aliases(entry):
-            a_folded = _fold(alias)
-            if a_folded and a_folded in folded_path:
-                return hit(entry, "substring", alias)
+            # Ganzes Wort, nicht blinder Substring: sonst wuerde "Tom" in
+            # "/Automation/..." treffen und "Rob" in "Robotik".
+            if _word_in(folded_path, _fold(alias)) or _word_in(slugged_path, slug(alias)):
+                return hit(entry, "word", alias)
 
     return {"id": default_id, "name": "Nicht zugeordnet", "matched_by": "default",
             "matched_on": "", "clickup": {}}
+
+
+def _word_in(haystack: str, needle: str) -> bool:
+    """Treffer nur an Wortgrenzen (Trenner: alles ausser a-z0-9)."""
+    if not needle or not haystack:
+        return False
+    return re.search(r"(?<![a-z0-9])" + re.escape(needle) + r"(?![a-z0-9])", haystack) is not None
 
 
 def _aliases(entry: dict) -> list[str]:
@@ -248,7 +257,19 @@ def _selftest() -> int:
     r = resolve_consultant("/Uploads/Simon/Shoot", consultants)
     eq((r["id"], r["matched_by"]), ("simon", "segment"), "segment match")
     r = resolve_consultant("/Uploads/thorben-mueller-reels/x", consultants)
-    eq(r["id"], "thorben", "fuzzy umlaut/substring match")
+    eq(r["id"], "thorben", "fuzzy umlaut/word match")
+    short = [{"id": "tom", "name": "Tom"}, {"id": "robert", "name": "Robert", "aliases": ["Rob"]}]
+    eq(resolve_consultant("/Video Upload/Automation/x", short)["id"], "_triage",
+       "short alias must not match inside a word")
+    eq(resolve_consultant("/Video Upload/Robotik/x", short)["id"], "_triage",
+       "alias Rob must not match Robotik")
+    eq(resolve_consultant("/Video Upload/Tom/Reel 1", short)["id"], "tom", "exact segment still matches")
+    eq(resolve_consultant("/Video Upload/Reels Tom Oktober/x", short)["id"], "tom",
+       "alias as whole word inside a segment matches")
+    jd = [{"id": "jonas-dorsch", "name": "Jonas Dorsch", "aliases": ["Jonas", "Dorsch"]}]
+    eq(resolve_consultant("/Video Upload/Jonas Dorsch/Reel 1", jd)["id"], "jonas-dorsch", "full name segment")
+    eq(resolve_consultant("/Video Upload/jonas_dorsch/Reel 1", jd)["id"], "jonas-dorsch", "underscore variant")
+    eq(resolve_consultant("/Video Upload/Dorsch/Reel 1", jd)["id"], "jonas-dorsch", "surname alias")
     r = resolve_consultant("/Uploads/Fremder/x", consultants)
     eq((r["id"], r["matched_by"]), ("_triage", "default"), "fallback triage")
 
