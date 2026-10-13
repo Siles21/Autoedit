@@ -1,6 +1,6 @@
 {
   "_comment": "Kopie nach watcher/config.json, dann anpassen. config.json ist gitignored (enthaelt den Refresh-Token).",
-  "_clickup": "space_id 90124915942 = Fullfillment Neocore, folder_id 90127251518 = Ordner 'Reel' (dort liegen die Personen-Listen). list_id je Berater eintragen, sobald die Liste existiert.",
+  "_clickup": "space_id 90124915942 = Fullfillment Neocore, folder_id 90127251518 = Ordner 'Reel' (dort liegen die Personen-Listen). list_id je Berater ist die Personen-Liste in diesem Ordner.",
 
   "dropbox": {
     "app_key": "",
@@ -34,7 +34,7 @@
       "clickup": {
         "space_id": "90124915942",
         "folder_id": "90127251518",
-        "list_id": "",
+        "list_id": "901223289193",
         "assignee": ""
       }
     },
@@ -46,7 +46,7 @@
       "clickup": {
         "space_id": "90124915942",
         "folder_id": "90127251518",
-        "list_id": "",
+        "list_id": "901223289198",
         "assignee": ""
       }
     },
@@ -58,7 +58,7 @@
       "clickup": {
         "space_id": "90124915942",
         "folder_id": "90127251518",
-        "list_id": "",
+        "list_id": "901223289205",
         "assignee": ""
       }
     }
