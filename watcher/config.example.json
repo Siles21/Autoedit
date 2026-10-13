@@ -67,8 +67,8 @@
   "triage": {
     "consultant_id": "_triage",
     "clickup": {
-      "list_id": "",
-      "note": "Zwischenordner: Berater unklar -> Part 2 legt die Task hier ab, Mensch oder KI sortiert nach."
+      "list_id": "901223289242",
+      "note": "Liste 'Reel-Intake (unsortiert)' im Ordner Reel: Berater unklar (needs_triage) -> Part 2 legt die Task hier ab, Mensch oder KI sortiert nach."
     }
   },
 
